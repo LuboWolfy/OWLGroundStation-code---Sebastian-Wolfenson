@@ -1,0 +1,10 @@
+{
+    "interval_ms": 5000,
+    "ground_station_id": 0,
+    "commands": [
+        {"channel": "no_change", "action": "log_4_char_string", "data": "TEST"},
+        {"channel": "no_change", "action": "log_4_char_string", "data": "CPLY"},
+        {"channel": "no_change", "action": "log_2_char_string", "data": "OK"},
+        {"channel": "no_change", "action": "log_1_char_string", "data": "A"}
+    ]
+}

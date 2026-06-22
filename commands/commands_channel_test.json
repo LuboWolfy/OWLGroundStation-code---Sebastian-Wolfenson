@@ -1,0 +1,10 @@
+{
+    "interval_ms": 8000,
+    "ground_station_id": 0,
+    "commands": [
+        {"channel": "SF12_BW125", "action": "log_signal_rssi"},
+        {"channel": "SF10_BW250", "action": "log_signal_rssi"},
+        {"channel": "SF8_BW500",  "action": "log_signal_rssi"},
+        {"channel": "SF7_BW125",  "action": "log_signal_rssi"}
+    ]
+}

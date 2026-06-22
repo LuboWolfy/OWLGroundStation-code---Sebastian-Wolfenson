@@ -1,0 +1,120 @@
+================================================================================
+FUTURE WORK — IC-9700 UHF RECEIVE PATH
+SQuAD Payload Ground Station
+================================================================================
+
+OVERVIEW
+--------
+The ground station includes a third, independent receive path built around an
+Icom IC-9700 transceiver and the Direwolf software TNC. The intent of this path
+is to capture and decode SAL-E's UHF telemetry downlink directly at our station,
+making us independent of the PolySat TPS API (which currently supplies all of
+our beacon data via Cal Poly CubeSat Lab's ground station).
+
+As of this writing, the IC-9700 receive path is fully built and integrated into
+the automated pipeline, but it has NOT yet successfully decoded a real satellite
+transmission. The remaining work is described below.
+
+
+CONFIRMED WORKING
+-----------------
+- IC-9700 is connected to the ground station computer and enumerates correctly
+  as ALSA sound card 1, device 0 (plughw:1,0).
+- The USB audio path functions: open-squelch noise is captured successfully by
+  arecord, and the USB AF output level is adjustable from the radio menu
+  (MENU -> SET -> Connectors -> USB AF Output Level), reaching a maximum
+  amplitude of ~0.095 on receiver hiss at 100%.
+- The radio mode is set to USB-D (USB Data), which is required for 9600 baud
+  GFSK rather than FM.
+- Direwolf is installed and is launched automatically during every pass by the
+  execute-schedule pipeline (start_direwolf), writing a per-pass log file. The
+  logs are currently empty because no frames are being decoded.
+
+Per correspondence with the CubeSat Lab, the SAL-E UHF downlink uses:
+  - 9600 baud
+  - AX.25 framing
+  - GFSK modulation
+  - Their station demodulates with a hardware Kantronics FSK TNC
+The satellite transmits a short GFSK beacon every ~8 seconds and performs an
+automatic file transfer during every pass (the "8 rapid beats" pattern audible
+on a waterfall). This downlink occurs on every pass regardless of whether the
+satellite received our LoRa uplink, so the receive path can be tested on any
+pass.
+
+
+REMAINING WORK
+--------------
+
+1. CAPTURE AND DECODE A REAL PASS (highest priority)
+   Every test to date has been performed on open-squelch receiver hiss, not on
+   an actual satellite signal. The single most important next step is to record
+   the IC-9700 audio to a WAV file during a real pass and attempt an offline
+   Direwolf decode:
+
+       arecord -D plughw:1,0 -f S16_LE -r 48000 -c 1 -d 720 pass_test.wav
+       direwolf -B 9600 -r 48000 pass_test.wav
+
+   Recording to a file (rather than relying only on the live pipeline decode)
+   allows the same capture to be re-processed repeatedly with different decoder
+   settings. This one test answers most of the open questions below.
+
+2. CONFIRM THE EXACT UHF DOWNLINK FREQUENCY
+   The precise SAL-E downlink frequency (in the 437 MHz band) must be confirmed
+   from the CubeSat Lab or the satellite's SatNOGS profile. A small error in
+   tuning will prevent any decode.
+
+3. VERIFY DOPPLER CORRECTION DURING A PASS
+   rigctld is started automatically (TCP port 4600), but active Doppler tracking
+   by Gpredict has not been verified during a live pass. At 437 MHz the Doppler
+   shift is approximately +/-10 kHz across a pass; without active retuning the
+   signal drifts out of the receiver passband mid-pass and cannot be decoded.
+   Confirm that Gpredict is commanding the IC-9700 frequency in real time.
+
+4. INVESTIGATE ANTENNA AND SIGNAL STRENGTH (likely the real bottleneck)
+   The CubeSat Lab decodes the same downlink successfully with their station, so
+   the limiting factor at our station may be received signal strength. Open
+   questions:
+     - Is the UHF antenna actually pointed at the satellite (is az/el tracking
+       driving the correct antenna)?
+     - Is there sufficient antenna gain for the 437 MHz downlink?
+     - Would a UHF low-noise preamplifier be required?
+   The real-pass WAV capture (item 1) will reveal whether clear GFSK bursts are
+   present in the audio. If the audio contains only noise with no visible
+   bursts, the problem is antenna/signal strength and is a hardware task.
+
+5. SET UP THE TELEMETRY DECODER
+   Direwolf only produces raw AX.25 frames; it does not interpret SAL-E's
+   telemetry format. To turn decoded frames into meaningful fields (including
+   the OWL beacon bytes that represent echoes of our transmitted packets), the
+   SAL-E decoder published on the satellite's SatNOGS database profile is
+   required. This decoder is a Kaitai Struct definition run via the
+   satnogs-decoders Python package. Direwolf can be configured to output KISS
+   frames (to a file or TCP port) that are then fed to this decoder.
+
+   SatNOGS profile / decoder:
+     https://db.satnogs.org/satellite/WKBS-6047-7369-7033-9398#data
+   SatNOGS beacon dashboard (already aggregates this data worldwide):
+     https://dashboard.satnogs.org/goto/FkZXYZ-vg?orgId=1
+
+
+RECOMMENDED ORDER
+-----------------
+  1. Capture a real pass to a WAV file.
+  2. If clear GFSK bursts are present but Direwolf does not decode, tune the
+     Direwolf parameters and confirm Doppler correction.
+  3. If the audio is only noise, treat it as an antenna / signal-strength
+     problem and pursue antenna pointing, gain, and a possible preamp.
+  4. Once raw frames decode, set up the SatNOGS decoder to parse the OWL beacon
+     bytes and compare them against transmitted packets.
+
+
+SCOPE NOTE
+----------
+The CubeSat Lab confirmed that any telemetry we decode ourselves would be
+redundant with the data already available on the PolySat API and the public
+SatNOGS dashboard. Independently receiving and decoding SAL-E's UHF downlink is
+therefore valuable primarily as a demonstration of an end-to-end, self-contained
+receive capability rather than as a source of unique data. A reasonable project
+milestone is the successful decode of raw AX.25 frames at our station; full
+telemetry parsing is an optional extension.
+================================================================================

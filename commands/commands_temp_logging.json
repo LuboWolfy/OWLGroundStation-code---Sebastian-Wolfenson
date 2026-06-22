@@ -1,0 +1,10 @@
+{
+    "interval_ms": 5000,
+    "ground_station_id": 0,
+    "commands": [
+        {"channel": "no_change", "action": "log_top_temp"},
+        {"channel": "no_change", "action": "log_right_temp"},
+        {"channel": "no_change", "action": "log_bottom_temp"},
+        {"channel": "no_change", "action": "log_left_temp"}
+    ]
+}

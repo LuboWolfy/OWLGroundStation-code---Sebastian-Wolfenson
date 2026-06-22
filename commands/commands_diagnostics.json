@@ -1,0 +1,10 @@
+{
+    "interval_ms": 10000,
+    "ground_station_id": 0,
+    "commands": [
+        {"channel": "no_change", "action": "log_boot_cycle"},
+        {"channel": "no_change", "action": "log_valid_pkts_lifetime"},
+        {"channel": "no_change", "action": "log_time_since_boot"},
+        {"channel": "no_change", "action": "log_signal_rssi"}
+    ]
+}
