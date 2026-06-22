@@ -10,7 +10,7 @@ during each pass, captures received data through multiple independent receive
 paths, fetches satellite beacon telemetry, and produces per-pass analysis and
 plots — running unattended on a weekly cycle.
 
-Senior project by **Sebastian Wolfenson** and **Sammy Brunton** — Department of
+Senior project by **Sebastian Wolfenson** and **Sammy Brunton** in the Department of
 Electrical Engineering, California Polytechnic State University, San Luis Obispo.
 
 ---
@@ -34,12 +34,12 @@ schedule generated ──►  packets transmitted during pass  ──►  data c
 ### Three independent receive paths
 1. **Local LoRa RX** — QuAD radio on the ground station, confirms transmission
 2. **SQUAD RX monitor** — a second Raspberry Pi running `squad_monitor`
-3. **IC-9700 + Direwolf** — UHF (437 MHz) downlink capture *(in progress — see [docs](docs/icom_receive_path_future_work.txt))*
+3. **IC-9700 + Direwolf** — UHF (437 MHz) downlink capture *(no working implementation yet)*
 
 ### Verifying uplink
 The satellite echoes the first bytes of each received packet into its UHF
 telemetry beacon. That beacon is captured by the CubeSat Lab and exposed through
-the **PolySat TPS API**, which this software queries to confirm — end to end —
+the **PolySat TPS API**, which this software queries to confirm
 that the satellite received and demodulated each uplink.
 
 ---
