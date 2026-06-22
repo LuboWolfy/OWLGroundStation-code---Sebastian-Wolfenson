@@ -8,7 +8,7 @@ developed with OWL Integrations to test commercial LoRa hardware in space.
 This software autonomously schedules satellite passes, transmits command packets
 during each pass, captures received data through multiple independent receive
 paths, fetches satellite beacon telemetry, and produces per-pass analysis and
-plots — running unattended on a weekly cycle.
+plots. It is running unattended on a weekly cycle.
 
 Senior project by **Sebastian Wolfenson** and Master's thesis by **Sammy Brunton** in the Department of
 Electrical Engineering, California Polytechnic State University, San Luis Obispo.
