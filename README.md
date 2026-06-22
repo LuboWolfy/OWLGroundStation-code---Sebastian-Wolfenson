@@ -10,7 +10,7 @@ during each pass, captures received data through multiple independent receive
 paths, fetches satellite beacon telemetry, and produces per-pass analysis and
 plots — running unattended on a weekly cycle.
 
-Senior project by **Sebastian Wolfenson** and **Sammy Brunton** in the Department of
+Senior project by **Sebastian Wolfenson** and Master's thesis by **Sammy Brunton** in the Department of
 Electrical Engineering, California Polytechnic State University, San Luis Obispo.
 
 ---
